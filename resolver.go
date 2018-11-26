@@ -8,6 +8,9 @@ import (
 
 // Resolver is the strategy used to turn strings into resource handles.
 type Resolver interface {
+	// Resolve accepts a resource string and returns a handle that can load data
+	// from that resource.  All Resolver implementations must safely permit this
+	// method to be called concurrently.
 	Resolve(string) (Interface, error)
 }
 

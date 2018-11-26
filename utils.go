@@ -2,7 +2,7 @@ package resource
 
 var defaultResolver Resolver = &TemplateResolver{
 	Resolver: SchemeResolver{
-		Resolvers: DefaultSchemeResolvers(),
+		Resolvers: NewDefaultSchemeResolvers(),
 		NoScheme:  FileResolver{},
 	},
 }

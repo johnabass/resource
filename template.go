@@ -10,6 +10,7 @@ import (
 
 var ErrTooManyDefaults = errors.New("Too many default values")
 
+// DefaultEnvFunc is the default key in a template.FuncMap that maps to Getenv.
 const DefaultEnvFunc = "env"
 
 // Getenv is an analog to os.Getenv that allows for an optional default value to be used when
@@ -31,9 +32,9 @@ func Getenv(key string, def ...string) (string, error) {
 	return "", nil
 }
 
-// ConfigureDefaults is used to set up the defaults for a resource template.  This function is
+// ConfigureTemplateDefaults is used to set up the defaults for a resource template.  This function is
 // useful when using an arbitrary template as the parent for parsing.
-func ConfigureDefaults(t *template.Template) *template.Template {
+func ConfigureTemplateDefaults(t *template.Template) *template.Template {
 	return t.Funcs(template.FuncMap{DefaultEnvFunc: Getenv})
 }
 
@@ -46,7 +47,8 @@ type TemplateResolver struct {
 	Resolver Resolver
 
 	// Template is the optional template for parsing.  If supplied, this template's Parse method is used
-	// to expand resource strings.  If not supplied, a simple default template is used.
+	// to expand resource strings.  If not supplied, a simple default template is created and used each
+	// time a resource string needs to be resolved.
 	//
 	// When supplied, this template's Parse method is guarded by an internal mutex.  Care must be taken that
 	// the same template is not used with multiple TemplateResolver instances.  It's safest to use template.Clone
@@ -66,7 +68,7 @@ func (tr *TemplateResolver) parse(v string) (t *template.Template, err error) {
 		t, err = tr.Template.Parse(v)
 		tr.parseLock.Unlock()
 	} else {
-		t, err = ConfigureDefaults(template.New("")).Parse(v)
+		t, err = ConfigureTemplateDefaults(template.New("")).Parse(v)
 	}
 
 	return

@@ -27,7 +27,7 @@ func Split(v string) (scheme, value string) {
 	return "", v
 }
 
-// DefaultSchemeResolvers produces a Resolvers with the default scheme mappings.
+// NewDefaultSchemeResolvers produces a Resolvers with the default scheme mappings.
 // These mappings are:
 //
 //   StringScheme is mapped to a StringResolver
@@ -36,7 +36,7 @@ func Split(v string) (scheme, value string) {
 //   HTTPScheme and HTTPSScheme are mapped to an HTTPResolver using the default HTTP Client
 //
 // When constructing custom SchemeResolver instances, this function is useful as a starting point.
-func DefaultSchemeResolvers() Resolvers {
+func NewDefaultSchemeResolvers() Resolvers {
 	var (
 		fr = FileResolver{}
 		hr = HTTPResolver{}
