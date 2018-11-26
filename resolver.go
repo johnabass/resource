@@ -35,6 +35,7 @@ func (r StringResolver) Resolve(v string) (Interface, error) {
 // of encoding is configurable, and defaults to base64.StdEncoding.  Any scheme is ignored by
 // this resolver, allowing it to be mapped to any desired scheme.
 type BytesResolver struct {
+	// Encoding is the base64 encoding to use.  If not supplied, base64.StdEncoding is used.
 	Encoding *base64.Encoding
 }
 
@@ -56,6 +57,8 @@ func (r BytesResolver) Resolve(v string) (Interface, error) {
 // FileResolver resolves values as file system paths, relative to an optional Root directory.
 // Any scheme is ignored by this resolver.
 type FileResolver struct {
+	// Root is the optional file system path that acts as the logical root directory
+	// for any resource strings this instance resolves.  If not supplied, no root is assumed.
 	Root string
 }
 
@@ -69,6 +72,8 @@ func (r FileResolver) Resolve(v string) (Interface, error) {
 	return File(p), nil
 }
 
+// HTTPResolver uses an HTTP client to resolve resources.  Resource strings are expected to be
+// valid URIs resolvable by the net/http package.
 type HTTPResolver struct {
 	OpenMethod string
 	Client     HTTPClient

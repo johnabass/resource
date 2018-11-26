@@ -73,7 +73,7 @@ func WithClose(c HTTPClient) HTTPClient {
 	})
 }
 
-func Withtimeout(d time.Duration, c HTTPClient) HTTPClient {
+func WithTimeout(d time.Duration, c HTTPClient) HTTPClient {
 	return HTTPClientFunc(func(request *http.Request) (*http.Response, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), d)
 		defer cancel()
