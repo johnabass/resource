@@ -2,17 +2,39 @@ package resource
 
 import (
 	"bytes"
+	"errors"
 	"html/template"
 	"os"
 	"sync"
 )
 
+var ErrTooManyDefaults = errors.New("Too many default values")
+
 const DefaultEnvFunc = "env"
+
+// Getenv is an analog to os.Getenv that allows for an optional default value to be used when
+// the given environment variable is not present.  Supplying multiple default values raises an error.
+func Getenv(key string, def ...string) (string, error) {
+	if len(def) > 1 {
+		return "", ErrTooManyDefaults
+	}
+
+	v := os.Getenv(key)
+	if len(v) > 0 {
+		return v, nil
+	}
+
+	if len(def) > 0 {
+		return def[0], nil
+	}
+
+	return "", nil
+}
 
 // ConfigureDefaults is used to set up the defaults for a resource template.  This function is
 // useful when using an arbitrary template as the parent for parsing.
 func ConfigureDefaults(t *template.Template) *template.Template {
-	return t.Funcs(template.FuncMap{DefaultEnvFunc: os.Getenv})
+	return t.Funcs(template.FuncMap{DefaultEnvFunc: Getenv})
 }
 
 // TemplateResolver is a decorator that expands resource strings as text templates and passes the
