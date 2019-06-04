@@ -22,6 +22,7 @@ func (f HTTPClientFunc) Do(request *http.Request) (*http.Response, error) {
 	return f(request)
 }
 
+// WithMethod decorates an HTTPClient, setting a specific HTTP method on each request
 func WithMethod(method string, c HTTPClient) HTTPClient {
 	return HTTPClientFunc(func(request *http.Request) (*http.Response, error) {
 		request.Method = method
@@ -29,6 +30,7 @@ func WithMethod(method string, c HTTPClient) HTTPClient {
 	})
 }
 
+// WithHeader decorates an HTTPClient, setting a single HTTP header name/value on each request
 func WithHeader(name, value string, c HTTPClient) HTTPClient {
 	return HTTPClientFunc(func(request *http.Request) (*http.Response, error) {
 		if request.Header == nil {
@@ -40,6 +42,7 @@ func WithHeader(name, value string, c HTTPClient) HTTPClient {
 	})
 }
 
+// WithHeaders decorates an HTTPClient, copying a set of headers onto each request
 func WithHeaders(h http.Header, c HTTPClient) HTTPClient {
 	if len(h) == 0 {
 		return c
@@ -66,6 +69,7 @@ func WithHeaders(h http.Header, c HTTPClient) HTTPClient {
 	})
 }
 
+// WithClose decorates an HTTPClient, setting the Request.Close flag for each request
 func WithClose(c HTTPClient) HTTPClient {
 	return HTTPClientFunc(func(request *http.Request) (*http.Response, error) {
 		request.Close = true
@@ -73,9 +77,10 @@ func WithClose(c HTTPClient) HTTPClient {
 	})
 }
 
+// WithTimeout decorates an HTTPClient, creating a context with a timeout for each request
 func WithTimeout(d time.Duration, c HTTPClient) HTTPClient {
 	return HTTPClientFunc(func(request *http.Request) (*http.Response, error) {
-		ctx, cancel := context.WithTimeout(context.Background(), d)
+		ctx, cancel := context.WithTimeout(request.Context(), d)
 		defer cancel()
 
 		return c.Do(request.WithContext(ctx))
