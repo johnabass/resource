@@ -13,17 +13,11 @@ func DefaultResolver() Resolver {
 	return defaultResolver
 }
 
-// Resolve uses the default resolver to resolve a resource value.
-func Resolve(v string) (Interface, error) {
-	return defaultResolver.Resolve(v)
-}
-
-// MustResolve resolves a given resource string, panicing upon an error.
-func MustResolve(r Resolver, v string) Interface {
-	res, err := r.Resolve(v)
+// Must panics if err != nil, returning the given resource handle otherwise
+func Must(r Interface, err error) Interface {
 	if err != nil {
 		panic(err)
 	}
 
-	return res
+	return r
 }
